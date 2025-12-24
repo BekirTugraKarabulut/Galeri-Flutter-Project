@@ -11,7 +11,7 @@ class Firstpage extends StatefulWidget {
 class _FirstpageState extends State<Firstpage> {
 
     Future<void> kayitSayfasinaGecis() async {
-        await Future.delayed(const Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 4));
         Navigator.pushReplacementNamed(context, "/buttonpage");
     }
 

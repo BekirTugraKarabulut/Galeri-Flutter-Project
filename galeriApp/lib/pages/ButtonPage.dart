@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:galeri_app/pages/AdminLoginPage.dart';
 
 class Buttonpage extends StatefulWidget {
   const Buttonpage({super.key});
@@ -15,7 +16,7 @@ class _ButtonpageState extends State<Buttonpage> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         leading: IconButton(onPressed: (){
-          
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Adminloginpage()));
         }, icon: Icon(Icons.admin_panel_settings,color: Colors.orange,)),
       ),
       body: Center(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:galeri_app/pages/Anasayfa.dart';
+import 'package:galeri_app/pages/ArabaEklePage.dart';
 import 'package:galeri_app/pages/ButtonPage.dart';
 import 'package:galeri_app/pages/FirstPage.dart';
 import 'package:galeri_app/pages/LoginPage.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         "/registerpage": (context) => const Registerpage(),
         "/buttonpage": (context) => const Buttonpage(),
         "/loginpage": (context) => const Loginpage(),
-        "/anasayfa": (context) => const Anasayfa(),
+        "/arabaeklepage": (context) => const Arabaeklepage(),
       },
       title: 'Flutter Demo',
       theme: ThemeData(
