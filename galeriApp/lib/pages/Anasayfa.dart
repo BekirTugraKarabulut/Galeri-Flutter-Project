@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:galeri_app/pages/GaleriHakkindaPage.dart';
+import 'package:galeri_app/pages/KatalogPage.dart';
 import 'package:galeri_app/pages/ProfilimPage.dart';
 import 'package:galeri_app/pages/RandevularimPage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -74,7 +75,7 @@ class _AnasayfaState extends State<Anasayfa> {
                     ),
                   )
                 ) , onPressed: (){
-
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Katalogpage()));
                 }, child: Text("Katalog İncele" , style: TextStyle(color:  Colors.black , fontWeight: FontWeight.bold),)),
               )
             ],

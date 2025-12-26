@@ -19,6 +19,18 @@ class _ProfilimpageState extends State<Profilimpage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        leading: Icon(Icons.add , color: Colors.black,),
+        backgroundColor: Colors.black,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 25 , top: 25),
+            child: IconButton(onPressed: (){
+              Navigator.pushReplacementNamed(context, "/buttonpage");
+            }, icon: Icon(Icons.login_outlined , color: Colors.red,size: 25,)),
+          )
+        ],
+      ),
       body: Center(
         child: Column(
           children: [
@@ -29,7 +41,6 @@ class _ProfilimpageState extends State<Profilimpage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var profil = snapshot.data!;
-
                   Widget buildInfoBox(String label, String value, IconData icon) {
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 20),
@@ -69,7 +80,7 @@ class _ProfilimpageState extends State<Profilimpage> {
               },
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 40),
+              padding: const EdgeInsets.only(top: 20),
               child: ElevatedButton(style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll(
                   Colors.orange
