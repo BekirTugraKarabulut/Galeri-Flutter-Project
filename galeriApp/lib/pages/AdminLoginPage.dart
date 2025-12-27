@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:galeri_app/pages/AdminPage.dart';
 import 'package:galeri_app/service/AdminLoginService.dart';
 import 'package:lottie/lottie.dart';
 
@@ -95,7 +96,7 @@ class _AdminloginpageState extends State<Adminloginpage> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Giriş Başarılı"))
                       );
-                      Navigator.pushReplacementNamed(context, "/arabaeklepage");
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Arabaeklepage(galericiId: galericiId.text)));
                     }else{
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Giriş Başarısız"),

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:galeri_app/pages/AdminArabaEklePage.dart';
 import 'package:galeri_app/pages/AdminAraclarimPage.dart';
+import 'package:galeri_app/pages/AdminRandevularPage.dart';
 import 'package:galeri_app/pages/ButtonPage.dart';
 
 class Arabaeklepage extends StatefulWidget {
-  const Arabaeklepage({super.key});
+
+  String galericiId;
+  Arabaeklepage({super.key , required this.galericiId});
 
   @override
   State<Arabaeklepage> createState() => _ArabaeklepageState();
@@ -61,7 +64,7 @@ class _ArabaeklepageState extends State<Arabaeklepage> {
                         )
                     )
                 ),onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Adminarabaeklepage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Adminarabaeklepage(galericiId: widget.galericiId)));
                 }, child: Text("Araba Ekle",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),)),
               ),
             ),
@@ -80,7 +83,7 @@ class _ArabaeklepageState extends State<Arabaeklepage> {
                         )
                     )
                 ),onPressed: (){
-
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Adminrandevularpage(galericiId: widget.galericiId)));
                 }, child: Text("Randevular",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),)),
               ),
             ),

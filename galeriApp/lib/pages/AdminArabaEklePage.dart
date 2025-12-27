@@ -7,7 +7,9 @@ import 'package:galeri_app/service/ArabaEkleService.dart';
 import 'package:galeri_app/service/image_upload_service.dart';
 
 class Adminarabaeklepage extends StatefulWidget {
-  const Adminarabaeklepage({super.key});
+
+  String galericiId;
+  Adminarabaeklepage({super.key , required this.galericiId});
 
   @override
   State<Adminarabaeklepage> createState() => _AdminarabaeklepageState();
@@ -18,7 +20,6 @@ class _AdminarabaeklepageState extends State<Adminarabaeklepage> {
   final TextEditingController modelController = TextEditingController();
   final TextEditingController yilController = TextEditingController();
   final TextEditingController fiyatController = TextEditingController();
-  final TextEditingController galericiIdController = TextEditingController();
 
   final ImagePicker picker = ImagePicker();
   XFile? selectedImage;
@@ -60,8 +61,6 @@ class _AdminarabaeklepageState extends State<Adminarabaeklepage> {
               const SizedBox(height: 12),
               buildField(fiyatController, "Fiyat"),
               const SizedBox(height: 12),
-              buildField(galericiIdController, "Galerici Id"),
-              const SizedBox(height: 20),
 
               ElevatedButton(
                 onPressed: () async {
@@ -111,12 +110,14 @@ class _AdminarabaeklepageState extends State<Adminarabaeklepage> {
                     int.parse(yilController.text),
                     fiyatController.text,
                     uploadedFileName!,
-                    galericiIdController.text,
+                    widget.galericiId,
                   );
 
                   if (response) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Araba eklendi")),
+                      SnackBar(content: Text("Araba eklendi"),
+                      action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                      ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
