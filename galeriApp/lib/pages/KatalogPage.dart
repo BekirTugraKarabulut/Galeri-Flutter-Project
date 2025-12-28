@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:galeri_app/service/AracGetAllService.dart';
+import 'package:galeri_app/service/KullaniciFavoriEkleService.dart';
+import 'package:galeri_app/service/KullaniciFavorilerimService.dart';
+import 'package:galeri_app/service/KullaniciFavoriSilmeService.dart';
 
 class Katalogpage extends StatefulWidget {
-  const Katalogpage({super.key});
+  String username;
+  Katalogpage({super.key, required this.username});
 
   @override
   State<Katalogpage> createState() => _KatalogpageState();
@@ -11,6 +15,75 @@ class Katalogpage extends StatefulWidget {
 class _KatalogpageState extends State<Katalogpage> {
 
   final AracGetAllService _aracGetAllService = AracGetAllService();
+  final KullaniciFavoriEkleService _favoriService = KullaniciFavoriEkleService();
+  final KullaniciFavorilerimService _favorilerimService = KullaniciFavorilerimService();
+  final KullaniciFavoriSilmeService _favoriSilService = KullaniciFavoriSilmeService();
+
+  final Set<int> favoriteIds = {};
+  final Map<int, int> aracToFavoriId = {};
+  bool favLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    try {
+      final list = await _favorilerimService.favorilerim(widget.username);
+
+      setState(() {
+        favoriteIds.clear();
+        aracToFavoriId.clear();
+
+        for (var f in list) {
+          final aracId = f["arac"]["aracId"] as int;
+          final favoriId = f["favorilemeId"] as int;
+
+          favoriteIds.add(aracId);
+          aracToFavoriId[aracId] = favoriId;
+        }
+      });
+    } catch (e) {
+      debugPrint("Favoriler alınamadı: $e");
+    }
+  }
+
+  Future<void> _toggleFavorite(int aracId) async {
+    if (favLoading) return;
+    setState(() => favLoading = true);
+
+    try {
+      final bool isFavorite = favoriteIds.contains(aracId);
+
+      if (isFavorite) {
+        final favoriId = aracToFavoriId[aracId];
+
+        if (favoriId != null) {
+          final ok = await _favoriSilService.kullaniciFavoriSilme(favoriId);
+
+          if (ok) {
+            setState(() {
+              favoriteIds.remove(aracId);
+              aracToFavoriId.remove(aracId);
+            });
+          }
+        }
+      }
+      else {
+        final ok = await _favoriService.favoriEkle(widget.username, aracId);
+
+        if (ok) {
+          await _loadFavorites();
+        }
+      }
+    } catch (e) {
+      debugPrint("Toggle favori hatası: $e");
+    } finally {
+      setState(() => favLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +92,13 @@ class _KatalogpageState extends State<Katalogpage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.orange),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined,
+              color: Colors.orange),
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
-        title: const Text(
-          "Katalog",
-          style: TextStyle(color: Colors.orange),
-        ),
+        title: const Text("Katalog",
+            style: TextStyle(color: Colors.orange)),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _aracGetAllService.getAllArac(),
@@ -37,15 +109,11 @@ class _KatalogpageState extends State<Katalogpage> {
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
-              child: Text(
-                "Araç bulunamadı",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: Text("Araç bulunamadı",
+                  style: TextStyle(color: Colors.white)),
             );
           }
-
           final araclar = snapshot.data!;
-
           return GridView.count(
             padding: const EdgeInsets.all(10),
             crossAxisCount: 2,
@@ -53,52 +121,60 @@ class _KatalogpageState extends State<Katalogpage> {
             mainAxisSpacing: 10,
             childAspectRatio: 0.8,
             children: araclar.map((arac) {
+              final int aracId = arac["aracId"];
+              final bool isFavorite = favoriteIds.contains(aracId);
               return Card(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            "http://10.0.2.2:8086/uploads/${arac['aracResmi']}",
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.broken_image, size: 40),
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                "http://10.0.2.2:8086/uploads/${arac['aracResmi']}",
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                const Icon(Icons.broken_image, size: 40),
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text("${arac['marka']} ${arac['model']}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                          Text("Yıl: ${arac['yil']}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                          Text("Fiyat: ${arac['fiyat']} ₺",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "${arac['marka']} ${arac['model']}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                    ),
+                    Positioned(
+                      right: 5,
+                      top: 5,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.star,
+                          color: isFavorite ? Colors.orange : Colors.black,
                         ),
+                        onPressed: () => _toggleFavorite(aracId),
                       ),
-                      Text(
-                        "Yıl: ${arac['yil']}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        "Fiyat: ${arac['fiyat']} ₺",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             }).toList(),

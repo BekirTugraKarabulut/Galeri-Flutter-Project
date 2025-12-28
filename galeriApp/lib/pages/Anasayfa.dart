@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:galeri_app/pages/FavorilerimPage.dart';
 import 'package:galeri_app/pages/GaleriHakkindaPage.dart';
 import 'package:galeri_app/pages/KatalogPage.dart';
 import 'package:galeri_app/pages/ProfilimPage.dart';
@@ -76,7 +77,7 @@ class _AnasayfaState extends State<Anasayfa> {
                     ),
                   )
                 ) , onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Katalogpage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Katalogpage(username: widget.username)));
                 }, child: Text("Katalog İncele" , style: TextStyle(color:  Colors.black , fontWeight: FontWeight.bold),)),
               )
             ],
@@ -121,7 +122,7 @@ class _AnasayfaState extends State<Anasayfa> {
     _buildAnasayfa(),
     Randevularimpage(username: widget.username),
     Profilimpage(username: widget.username),
-    const Galerihakkindapage(),
+    const GaleriHakkindaPage(),
   ];
 
   @override
@@ -159,6 +160,12 @@ class _AnasayfaState extends State<Anasayfa> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.orange,
+          child: Icon(Icons.star , color: Colors.black,),
+          onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Favorilerimpage(username: widget.username)));
+      }),
     );
   }
 }

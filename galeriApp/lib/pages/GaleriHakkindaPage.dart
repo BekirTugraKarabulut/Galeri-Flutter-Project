@@ -1,64 +1,149 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
 
-class Galerihakkindapage extends StatefulWidget {
-  const Galerihakkindapage({super.key});
+Future<Position> _getLocation() async {
+  bool enabled = await Geolocator.isLocationServiceEnabled();
+  if (!enabled) throw 'Konum servisi kapalı';
 
-  @override
-  State<Galerihakkindapage> createState() => _GalerihakkindapageState();
+  LocationPermission p = await Geolocator.checkPermission();
+  if (p == LocationPermission.denied) {
+    p = await Geolocator.requestPermission();
+    if (p == LocationPermission.denied) throw 'İzin verilmedi';
+  }
+
+  if (p == LocationPermission.deniedForever) {
+    throw 'Ayarlar → Konum izni vermen gerekiyor';
+  }
+
+  return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 }
 
-class _GalerihakkindapageState extends State<Galerihakkindapage> {
+class GaleriHakkindaPage extends StatefulWidget {
+  const GaleriHakkindaPage({super.key});
+
+  @override
+  State<GaleriHakkindaPage> createState() => _GaleriHakkindaPageState();
+}
+
+class _GaleriHakkindaPageState extends State<GaleriHakkindaPage> {
+  Future<LatLng>? _future;
+  bool _showMap = false;
+
+  void _loadMap() {
+    setState(() {
+      _showMap = true;
+      _future = _getLocation().then(
+            (p) => LatLng(p.latitude, p.longitude),
+      );
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        centerTitle: true,
-        title: Text("Galerimiz Hakkında" , style: TextStyle(color: Colors.orange),),
-      ),
-      body: Center(
+          backgroundColor: Colors.black,
+          centerTitle: true,
+          title: const Text("Galeri Hakkında",style: TextStyle(color: Colors.orange),)),
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.asset("images/galeri.jpeg"),
-            SizedBox(height: 20,),
-            Padding(
-              padding: const EdgeInsets.only(left: 10 , right: 10),
-              child: Text("TuCar araç galerisi 2012 yılından beri sizlere hizmet vermektedir. Galerimiz motorsiklet ve araç satışı üzerine kurulmuş bir anonim şirketidir.",style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold, fontSize: 15),),
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadiusGeometry.directional(
+                bottomStart: Radius.circular(0),
+                bottomEnd: Radius.circular(0),
+              ),
+              child: Image.asset(
+                "images/galeri.jpeg",
+                height: 180,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
-            SizedBox(height: 20,),
-            Padding(
-              padding: const EdgeInsets.only(left: 10 , right: 10),
-              child: Text("TuCar ailesi, siz değerli müşterilerimizi ağırlamaktan memnuniyet duyar.",style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold, fontSize: 15),),
-            ),
-            SizedBox(height: 20,),
-            Row(mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.home,color: Colors.white,),
-                Text(" Atatürk Mahallesi Gül Sokak No:2 Beşiktaş/İstanbul",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 14),)
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text("Bekir Tuğra KARABULUT", style: TextStyle(color: Colors.white,fontSize: 18),
+                ),
+                SizedBox(width: 8),
+                Icon(Icons.person , color: Colors.white,),
               ],
             ),
-            SizedBox(height: 20,),
-            Row(mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.account_box_rounded,color: Colors.white,),
-                Text(" Bekir Tuğra KARABULUT",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 14),)
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text("0-545-466-88-57", style: TextStyle(color: Colors.white,fontSize: 18),
+                ),
+                SizedBox(width: 8),
+                Icon(Icons.phone ,color: Colors.white,),
               ],
             ),
-            SizedBox(height: 20,),
-            Row(mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.phone,color: Colors.white,),
-                Text(" +90 0-542-316-48-58",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 14),)
-              ],
+            const SizedBox(height: 20),
+            ElevatedButton.icon(style: ButtonStyle(
+              backgroundColor: WidgetStatePropertyAll(
+                Colors.orange
+              )
             ),
-            SizedBox(height: 35,),
-            Row(mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.star ,color: Colors.orange,),
-                Text(" Bize Ulaşabilirsiniz",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 14),)
-              ],
+              onPressed: _loadMap,
+              icon: const Icon(Icons.location_on , color: Colors.black,),
+              label: const Text("Konumu Görüntüle",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
             ),
+            const SizedBox(height: 16),
+            if (_showMap)
+              SizedBox(
+                height: 320,
+                child: FutureBuilder<LatLng>(
+                  future: _future,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          "Hata: ${snapshot.error}",
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }
+
+                    final pos = snapshot.data!;
+                    return FlutterMap(
+                      options: MapOptions(
+                        initialCenter: pos,
+                        initialZoom: 16,
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                          "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        ),
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              point: pos,
+                              width: 40,
+                              height: 40,
+                              child: const Icon(
+                                Icons.location_pin,
+                                size: 40,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    );
+                  },
+                ),
+              ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
