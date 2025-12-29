@@ -66,7 +66,6 @@ class _ProfilguncellepageState extends State<Profilguncellepage> {
         const SnackBar(content: Text("Profil başarıyla güncellendi")),
       );
 
-      // ➜ Geri dön ve "güncellendi" bilgisini gönder
       Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -117,7 +116,6 @@ class _ProfilguncellepageState extends State<Profilguncellepage> {
               ),
               const SizedBox(height: 20),
 
-              // USERNAME
               TextField(
                 style: const TextStyle(color: Colors.orange),
                 controller: usernameController,
@@ -132,7 +130,6 @@ class _ProfilguncellepageState extends State<Profilguncellepage> {
               ),
               const SizedBox(height: 12),
 
-              // ISIM
               TextField(
                 style: const TextStyle(color: Colors.orange),
                 controller: isimController,
@@ -146,7 +143,6 @@ class _ProfilguncellepageState extends State<Profilguncellepage> {
               ),
               const SizedBox(height: 12),
 
-              // SOYISIM
               TextField(
                 style: const TextStyle(color: Colors.orange),
                 controller: soyisimController,
@@ -160,7 +156,6 @@ class _ProfilguncellepageState extends State<Profilguncellepage> {
               ),
               const SizedBox(height: 12),
 
-              // TELEFON
               TextField(
                 style: const TextStyle(color: Colors.orange),
                 controller: telefonController,

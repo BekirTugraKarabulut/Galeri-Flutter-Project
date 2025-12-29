@@ -79,7 +79,7 @@ class _RandevualpageState extends State<Randevualpage> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Randevu alınırken hata oluştu"),
+        SnackBar(content: Text("Randevu tarih ve saati daha önceden alınmış ! Lütfen başka bir tarih ve saat seçiniz."),
         action: SnackBarAction(label: "Tamam", onPressed: (){}),
         ),
       );

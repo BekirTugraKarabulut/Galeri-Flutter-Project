@@ -44,6 +44,7 @@ class _GaleriHakkindaPageState extends State<GaleriHakkindaPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+          leading: Icon(Icons.add , color: Colors.black,),
           backgroundColor: Colors.black,
           centerTitle: true,
           title: const Text("Galeri Hakkında",style: TextStyle(color: Colors.orange),)),

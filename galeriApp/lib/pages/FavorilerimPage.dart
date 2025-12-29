@@ -123,8 +123,8 @@ class _FavorilerimpageState extends State<Favorilerimpage> {
             ),
             itemBuilder: (context, index) {
               final favori = favorilerimList[index];
-
               return Card(
+                color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -150,19 +150,26 @@ class _FavorilerimpageState extends State<Favorilerimpage> {
                             CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  "Marka : ${favori["arac"]["marka"]}"),
+                                  "Marka : ${favori["arac"]["marka"]}",
+                              style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),
+                              ),
                               Text(
-                                  "Model : ${favori["arac"]["model"]}"),
+                                  "Model : ${favori["arac"]["model"]}",
+                                style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),
+                              ),
                               Text(
-                                  "Yıl : ${favori["arac"]["yil"]}"),
+                                  "Yıl : ${favori["arac"]["yil"]}",
+                                style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),
+                              ),
                               Text(
-                                  "Araç Fiyatı : ${favori["arac"]["fiyat"]} TL"),
+                                  "Araç Fiyatı : ${favori["arac"]["fiyat"]} TL",
+                                style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),
+                              ),
                             ],
                           ),
                         ),
                       ],
                     ),
-
                     Positioned(
                       right: 4,
                       top: 4,

@@ -53,6 +53,7 @@ class _AdminarabaeklepageState extends State<Adminarabaeklepage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
+              Image.asset("images/"),
               buildField(markaController, "Marka"),
               const SizedBox(height: 12),
               buildField(modelController, "Model"),
@@ -99,7 +100,9 @@ class _AdminarabaeklepageState extends State<Adminarabaeklepage> {
                 onPressed: () async {
                   if (uploadedFileName == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Önce resim seçmelisin")),
+                      SnackBar(content: Text("Önce resim seçmelisin"),
+                      action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                      ),
                     );
                     return;
                   }

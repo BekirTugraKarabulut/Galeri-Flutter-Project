@@ -47,6 +47,9 @@ class _ProfilimpageState extends State<Profilimpage> {
             child: IconButton(
               onPressed: () {
                 Navigator.pushReplacementNamed(context, "/buttonpage");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Çıkış Yaptınız."))
+                );
               },
               icon: const Icon(Icons.login_outlined,
                   color: Colors.red, size: 25),

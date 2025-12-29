@@ -93,7 +93,8 @@ class _LoginpageState extends State<Loginpage> {
 
                       if(response){
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Giriş Başarılı"))
+                          SnackBar(content: Text("Giriş Başarılı"),
+                          action: SnackBarAction(label: "Tamam", onPressed: (){}),)
                         );
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>Anasayfa(username: usernameController.text)));
                       }

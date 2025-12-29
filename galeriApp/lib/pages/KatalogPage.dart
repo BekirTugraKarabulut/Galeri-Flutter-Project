@@ -3,6 +3,8 @@ import 'package:galeri_app/service/AracGetAllService.dart';
 import 'package:galeri_app/service/KullaniciFavoriEkleService.dart';
 import 'package:galeri_app/service/KullaniciFavorilerimService.dart';
 import 'package:galeri_app/service/KullaniciFavoriSilmeService.dart';
+import 'package:galeri_app/service/MarkaService.dart';
+import 'package:galeri_app/service/ModelService.dart';
 
 class Katalogpage extends StatefulWidget {
   String username;
@@ -13,20 +15,30 @@ class Katalogpage extends StatefulWidget {
 }
 
 class _KatalogpageState extends State<Katalogpage> {
-
   final AracGetAllService _aracGetAllService = AracGetAllService();
   final KullaniciFavoriEkleService _favoriService = KullaniciFavoriEkleService();
   final KullaniciFavorilerimService _favorilerimService = KullaniciFavorilerimService();
   final KullaniciFavoriSilmeService _favoriSilService = KullaniciFavoriSilmeService();
+  final MarkaService _markaService = MarkaService();
+  final ModelService _modelService = ModelService();
 
   final Set<int> favoriteIds = {};
   final Map<int, int> aracToFavoriId = {};
   bool favLoading = false;
 
+  String? selectedMarka;
+  String? selectedModel;
+
+  Future<List<Map<String, dynamic>>>? _futureAraclar;
+
+  final List<String> markalar = ["Tüm Araçlar", "BMW", "Skoda", "Hyundai" , "Renault"];
+  final List<String> modeller = ["Tüm Araçlar", "M5", "X5", "Kodiaq", "Accent" , "Kango"];
+
   @override
   void initState() {
     super.initState();
     _loadFavorites();
+    _futureAraclar = _aracGetAllService.getAllArac();
   }
 
   Future<void> _loadFavorites() async {
@@ -45,9 +57,7 @@ class _KatalogpageState extends State<Katalogpage> {
           aracToFavoriId[aracId] = favoriId;
         }
       });
-    } catch (e) {
-      debugPrint("Favoriler alınamadı: $e");
-    }
+    } catch (_) {}
   }
 
   Future<void> _toggleFavorite(int aracId) async {
@@ -59,30 +69,61 @@ class _KatalogpageState extends State<Katalogpage> {
 
       if (isFavorite) {
         final favoriId = aracToFavoriId[aracId];
-
         if (favoriId != null) {
           final ok = await _favoriSilService.kullaniciFavoriSilme(favoriId);
-
           if (ok) {
             setState(() {
               favoriteIds.remove(aracId);
               aracToFavoriId.remove(aracId);
             });
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Araç favorilerden kaldırıldı"),
+                duration: Duration(seconds: 2),
+              ),
+            );
           }
         }
-      }
-      else {
+      } else {
         final ok = await _favoriService.favoriEkle(widget.username, aracId);
-
         if (ok) {
           await _loadFavorites();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Araç favorilere eklendi"),
+              duration: Duration(seconds: 2),
+            ),
+          );
         }
       }
-    } catch (e) {
-      debugPrint("Toggle favori hatası: $e");
     } finally {
       setState(() => favLoading = false);
     }
+  }
+
+  void _filtreCalistir() {
+    setState(() {
+      if (selectedMarka != null) {
+        _futureAraclar = _markaService.markaGetAll(selectedMarka!);
+      } else if (selectedModel != null) {
+        _futureAraclar = _modelService.modelGetAll(selectedModel!);
+      } else {
+        _futureAraclar = _aracGetAllService.getAllArac();
+      }
+    });
+  }
+
+  Widget _dropdownContainer({required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: Colors.orange,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: child,
+    );
   }
 
   @override
@@ -92,94 +133,197 @@ class _KatalogpageState extends State<Katalogpage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_new_outlined,
-              color: Colors.orange),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.orange),
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
-        title: const Text("Katalog",
-            style: TextStyle(color: Colors.orange)),
+        title: const Text(
+          "Katalog",
+          style: TextStyle(color: Colors.orange),
+        ),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _aracGetAllService.getAllArac(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text("Araç bulunamadı",
-                  style: TextStyle(color: Colors.white)),
-            );
-          }
-          final araclar = snapshot.data!;
-          return GridView.count(
-            padding: const EdgeInsets.all(10),
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 0.8,
-            children: araclar.map((arac) {
-              final int aracId = arac["aracId"];
-              final bool isFavorite = favoriteIds.contains(aracId);
-              return Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                "http://10.0.2.2:8086/uploads/${arac['aracResmi']}",
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) =>
-                                const Icon(Icons.broken_image, size: 40),
-                              ),
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _dropdownContainer(
+                    child: DropdownButton<String>(
+                      value: selectedMarka,
+                      hint: const Text(
+                        "Marka",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      icon: const Icon(Icons.arrow_drop_down_outlined, color: Colors.black),
+                      dropdownColor: Colors.orange,
+                      isExpanded: true,
+                      underline: const SizedBox(),
+                      items: markalar.map((m) {
+                        return DropdownMenuItem(
+                          value: m == "Tüm Araçlar" ? null : m,
+                          child: Text(
+                            m,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text("${arac['marka']} ${arac['model']}",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black)),
-                          Text("Yıl: ${arac['yil']}",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black)),
-                          Text("Fiyat: ${arac['fiyat']} ₺",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black)),
-                        ],
-                      ),
+                        );
+                      }).toList(),
+                      onChanged: (v) {
+                        selectedMarka = v;
+                        selectedModel = null;
+                        _filtreCalistir();
+                      },
                     ),
-                    Positioned(
-                      right: 5,
-                      top: 5,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.star,
-                          color: isFavorite ? Colors.orange : Colors.black,
-                        ),
-                        onPressed: () => _toggleFavorite(aracId),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              );
-            }).toList(),
-          );
-        },
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _dropdownContainer(
+                    child: DropdownButton<String>(
+                      value: selectedModel,
+                      hint: const Text(
+                        "Model",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      icon: const Icon(Icons.arrow_drop_down_outlined, color: Colors.black),
+                      dropdownColor: Colors.orange,
+                      isExpanded: true,
+                      underline: const SizedBox(),
+                      items: modeller.map((m) {
+                        return DropdownMenuItem(
+                          value: m == "Tüm Araçlar" ? null : m,
+                          child: Text(
+                            m,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (v) {
+                        selectedModel = v;
+                        selectedMarka = null;
+                        _filtreCalistir();
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: _futureAraclar,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "Araç bulunamadı",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
+
+                final araclar = snapshot.data!;
+
+                return GridView.count(
+                  padding: const EdgeInsets.all(10),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 0.8,
+                  children: araclar.map((arac) {
+                    final int aracId = arac["aracId"];
+                    final bool isFavorite = favoriteIds.contains(aracId);
+
+                    return Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Stack(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 130,
+                                  width: double.infinity,
+                                  child: Image.network(
+                                    "http://10.0.2.2:8086/uploads/${arac['aracResmi']}",
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "${arac['marka']} ${arac['model']}",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black),
+                                      ),
+                                      Text(
+                                        "Yıl: ${arac['yil']}",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black),
+                                      ),
+                                      Text(
+                                        "Fiyat: ${arac['fiyat']} ₺",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Positioned(
+                              right: 5,
+                              top: 5,
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.star,
+                                  color: isFavorite
+                                      ? Colors.orange
+                                      : Colors.black,
+                                ),
+                                onPressed: () => _toggleFavorite(aracId),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
