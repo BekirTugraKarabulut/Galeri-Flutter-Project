@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:galeri_app/service/AracGetAllService.dart';
 import 'package:galeri_app/service/AracSilService.dart';
+import 'package:galeri_app/pages/Aracdetaypage.dart';
+import 'package:intl/intl.dart';
+
 
 class Adminaraclarimpage extends StatefulWidget {
   const Adminaraclarimpage({super.key});
@@ -10,8 +13,14 @@ class Adminaraclarimpage extends StatefulWidget {
 }
 
 class _AdminaraclarimpageState extends State<Adminaraclarimpage> {
+
   final AracGetAllService _aracGetAllService = AracGetAllService();
   final AracSilService _aracSilService = AracSilService();
+
+  String formatFiyat(dynamic fiyat) {
+    final formatter = NumberFormat("#,##0", "tr_TR");
+    return formatter.format(int.parse(fiyat.toString()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,20 +28,12 @@ class _AdminaraclarimpageState extends State<Adminaraclarimpage> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios_new_outlined,
-            color: Colors.orange,
-          ),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.orange),
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
-        title: const Text(
-          "Araçlarım",
-          style: TextStyle(color: Colors.orange),
-        ),
+        title: const Text("Araçlarım", style: TextStyle(color: Colors.orange)),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _aracGetAllService.getAllArac(),
@@ -43,10 +44,7 @@ class _AdminaraclarimpageState extends State<Adminaraclarimpage> {
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
-              child: Text(
-                "Araç bulunamadı",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: Text("Araç bulunamadı", style: TextStyle(color: Colors.white)),
             );
           }
 
@@ -61,99 +59,118 @@ class _AdminaraclarimpageState extends State<Adminaraclarimpage> {
             children: araclar.map((arac) {
               return Stack(
                 children: [
-                  Card(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 130,
-                            width: double.infinity,
-                            child: Image.network(
-                              "http://10.0.2.2:8086/uploads/${arac['aracResmi']}",
-                              fit: BoxFit.cover,
-                            ),
+
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => Aracdetaypage(
+                            aracId: arac['aracId'],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "${arac['marka']} ${arac['model']}",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Text(
-                                  "Yıl: ${arac['yil']}",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Text(
-                                  "Fiyat: ${arac['fiyat']} ₺",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
+                        ),
+                      );
+                    },
+                    child: Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 130,
+                              width: double.infinity,
+                              child: Image.network(
+                                "http://10.0.2.2:8086/uploads/${arac['aracResmi']}",
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "${arac['marka']} ${arac['model']}",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Yıl: ${arac['yil']}",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Fiyat: ${formatFiyat(arac['fiyat'])} ₺",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
 
                   Positioned(
-                    right: 6,
-                    top: 6,
+                    right: 1,
+                    top: 1,
                     child: IconButton(
                       icon: const Icon(Icons.clear, color: Colors.red),
                       onPressed: () async {
                         final result = await showDialog<bool>(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            title: const Text("Onay"),
+                            backgroundColor: Colors.orange,
+                            title: const Text(
+                              "Onay",
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                            ),
                             content: const Text(
                               "Arabayı silmek istediğinize emin misiniz?",
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                             ),
                             actions: [
                               TextButton(
-                                child: const Text("Hayır"),
                                 onPressed: () => Navigator.pop(ctx, false),
+                                child: const Text("Hayır",
+                                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                               ),
                               TextButton(
-                                child: const Text("Evet"),
                                 onPressed: () => Navigator.pop(ctx, true),
+                                child: const Text("Evet",
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                               ),
                             ],
                           ),
                         );
 
                         if (result == true) {
-                          final success = await _aracSilService
-                              .aracSil(arac['aracId']);
+                          final success = await _aracSilService.aracSil(arac['aracId']);
 
                           if (success) {
-                            setState(() {}); // listeyi yeniler
+                            setState(() {});
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content: Text("Araç silindi")),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                  Text("Silme işlemi başarısız!")),
+                                backgroundColor: Colors.orange,
+                                content: Text(
+                                  "Araç silindi",
+                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             );
                           }
                         }

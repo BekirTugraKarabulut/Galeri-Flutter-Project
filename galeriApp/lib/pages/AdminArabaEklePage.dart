@@ -53,7 +53,8 @@ class _AdminarabaeklepageState extends State<Adminarabaeklepage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Image.asset("images/"),
+              Image.asset("images/admin.jpeg", height: 120 , width: 120,),
+              const SizedBox(height: 25),
               buildField(markaController, "Marka"),
               const SizedBox(height: 12),
               buildField(modelController, "Model"),
@@ -98,10 +99,36 @@ class _AdminarabaeklepageState extends State<Adminarabaeklepage> {
 
               ElevatedButton(
                 onPressed: () async {
+
+                  if(markaController.text.isEmpty || modelController.text.isEmpty || yilController.text.isEmpty || fiyatController.text.isEmpty){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(backgroundColor: Colors.orange ,content: Text("Tüm alanları doldurmalısın !" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                      action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
+                      ),
+                    );
+                    return;
+                  }
+
+                  if (0 > int.parse(fiyatController.text)){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(backgroundColor: Colors.orange,content: Text("Araba fiyatı 0'dan büyük olmalı",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                      action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),)
+                    );
+                    return;
+                  }
+
+                  if( 1950 > int.parse(yilController.text) || int.parse(yilController.text) > DateTime.now().year){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(backgroundColor: Colors.orange,content: Text("Araba yılı 1950 ile ${DateTime.now().year} arasında olmalı" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                      action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),)
+                    );
+                    return;
+                  }
+
                   if (uploadedFileName == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Önce resim seçmelisin"),
-                      action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                      SnackBar(backgroundColor: Colors.orange,content: Text("Arac resim seçmelisin", style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                      action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
                       ),
                     );
                     return;
@@ -118,14 +145,14 @@ class _AdminarabaeklepageState extends State<Adminarabaeklepage> {
 
                   if (response) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Araba eklendi"),
-                      action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                      SnackBar(backgroundColor: Colors.orange,content: Text("Araba eklendi",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                      action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
                       ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Araba eklenirken hata oluştu")),
+                      const SnackBar(backgroundColor: Colors.orange,
+                          content: Text("Araba eklenirken hata oluştu",style: TextStyle(color: Colors.black),)),
                     );
                   }
                 },

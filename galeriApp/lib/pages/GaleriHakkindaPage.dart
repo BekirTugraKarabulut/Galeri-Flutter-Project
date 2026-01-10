@@ -68,17 +68,17 @@ class _GaleriHakkindaPageState extends State<GaleriHakkindaPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                Text("Bekir Tuğra KARABULUT", style: TextStyle(color: Colors.white,fontSize: 18),
+                Text("Universite Mahallesi Muhendislik D Blok /Malatya", style: TextStyle(color: Colors.white,fontSize: 15),
                 ),
                 SizedBox(width: 8),
-                Icon(Icons.person , color: Colors.white,),
+                Icon(Icons.home_work_rounded , color: Colors.white,),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                Text("0-545-466-88-57", style: TextStyle(color: Colors.white,fontSize: 18),
+                Text("Bize Ulaşın : 0-545-466-88-57", style: TextStyle(color: Colors.white,fontSize: 16),
                 ),
                 SizedBox(width: 8),
                 Icon(Icons.phone ,color: Colors.white,),
@@ -122,8 +122,8 @@ class _GaleriHakkindaPageState extends State<GaleriHakkindaPage> {
                       ),
                       children: [
                         TileLayer(
-                          urlTemplate:
-                          "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                          urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                          userAgentPackageName: 'galeri_app',
                         ),
                         MarkerLayer(
                           markers: [

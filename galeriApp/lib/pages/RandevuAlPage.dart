@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:galeri_app/pages/RandevularimPage.dart';
 import 'package:intl/intl.dart';
 import 'package:galeri_app/service/RandevuAlService.dart';
 import 'package:lottie/lottie.dart';
@@ -49,15 +50,28 @@ class _RandevualpageState extends State<Randevualpage> {
 
     if (selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Lütfen tarih ve saat seçin"),
-        action: SnackBarAction(label: "Tamam", onPressed: (){}),
+        SnackBar(backgroundColor: Colors.orange,
+          content: Text("Lütfen tarih ve saat giriniz" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+          action: SnackBarAction(textColor: Colors.black ,label: "Tamam" , onPressed: () {}),
         ),
       );
       return;
     }
 
-    final String formattedDate =
-    DateFormat("yyyy-MM-dd").format(selectedDate!);
+    if (selectedTime!.hour < 11 ||
+        selectedTime!.hour > 18 ||
+        (selectedTime!.hour == 18 && selectedTime!.minute > 0)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(backgroundColor: Colors.orange,
+          content: Text("Randevu sadece 11:00 - 18:00 arasında alınabilir",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+          action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: () {}),
+        ),
+      );
+      return;
+    }
+
+
+    final String formattedDate = DateFormat("yyyy-MM-dd").format(selectedDate!);
 
     final String formattedTime = selectedTime!.format(context);
 
@@ -75,12 +89,13 @@ class _RandevualpageState extends State<Randevualpage> {
 
     if (ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Randevu başarıyla oluşturuldu")),
+        SnackBar(backgroundColor: Colors.orange,content: Text("Randevu başarıyla oluşturuldu" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+        action: SnackBarAction(textColor: Colors.black ,label: "Tamam", onPressed: (){}),),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Randevu tarih ve saati daha önceden alınmış ! Lütfen başka bir tarih ve saat seçiniz."),
-        action: SnackBarAction(label: "Tamam", onPressed: (){}),
+        SnackBar(backgroundColor: Colors.orange,content: Text("Randevu tarih ve saati daha önceden alınmış ! Lütfen başka bir tarih ve saat seçiniz.",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+        action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
         ),
       );
       return;

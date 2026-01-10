@@ -5,8 +5,10 @@ import 'package:galeri_app/service/KullaniciFavorilerimService.dart';
 import 'package:galeri_app/service/KullaniciFavoriSilmeService.dart';
 import 'package:galeri_app/service/MarkaService.dart';
 import 'package:galeri_app/service/ModelService.dart';
+import 'package:intl/intl.dart';
 
 class Katalogpage extends StatefulWidget {
+
   String username;
   Katalogpage({super.key, required this.username});
 
@@ -15,6 +17,7 @@ class Katalogpage extends StatefulWidget {
 }
 
 class _KatalogpageState extends State<Katalogpage> {
+
   final AracGetAllService _aracGetAllService = AracGetAllService();
   final KullaniciFavoriEkleService _favoriService = KullaniciFavoriEkleService();
   final KullaniciFavorilerimService _favorilerimService = KullaniciFavorilerimService();
@@ -31,8 +34,8 @@ class _KatalogpageState extends State<Katalogpage> {
 
   Future<List<Map<String, dynamic>>>? _futureAraclar;
 
-  final List<String> markalar = ["Tüm Araçlar", "BMW", "Skoda", "Hyundai" , "Renault"];
-  final List<String> modeller = ["Tüm Araçlar", "M5", "X5", "Kodiaq", "Accent" , "Kango"];
+  final List<String> markalar = ["Tüm Araçlar", "Audi" , "Aston Martin" , "BMW", "Ferrari" , "Ford" , "Lamborghini" , "Mercedes"  , "Nissan" , "Porsche", "Renault" ,"Skoda" ];
+  final List<String> modeller = ["Tüm Araçlar",  "Aventador" , "E250" , "GTR" , "Kodiaq", "Koleos" , "Mustang",  "M5",   "R6" , "S63", "SF90", "V12" ,"X5", "911"];
 
   @override
   void initState() {
@@ -40,6 +43,12 @@ class _KatalogpageState extends State<Katalogpage> {
     _loadFavorites();
     _futureAraclar = _aracGetAllService.getAllArac();
   }
+
+  String formatFiyat(dynamic fiyat) {
+    final formatter = NumberFormat("#,##0", "tr_TR");
+    return formatter.format(int.parse(fiyat.toString()));
+  }
+
 
   Future<void> _loadFavorites() async {
     try {
@@ -78,8 +87,8 @@ class _KatalogpageState extends State<Katalogpage> {
             });
 
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Araç favorilerden kaldırıldı"),
+              const SnackBar(backgroundColor: Colors.orange,
+                content: Text("Araç favorilerden kaldırıldı", style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
                 duration: Duration(seconds: 2),
               ),
             );
@@ -91,8 +100,8 @@ class _KatalogpageState extends State<Katalogpage> {
           await _loadFavorites();
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Araç favorilere eklendi"),
+            const SnackBar(backgroundColor: Colors.orange,
+              content: Text("Araç favorilere eklendi",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
               duration: Duration(seconds: 2),
             ),
           );
@@ -104,6 +113,7 @@ class _KatalogpageState extends State<Katalogpage> {
   }
 
   void _filtreCalistir() {
+
     setState(() {
       if (selectedMarka != null) {
         _futureAraclar = _markaService.markaGetAll(selectedMarka!);
@@ -291,10 +301,11 @@ class _KatalogpageState extends State<Katalogpage> {
                                             color: Colors.black),
                                       ),
                                       Text(
-                                        "Fiyat: ${arac['fiyat']} ₺",
+                                        "Fiyat: ${formatFiyat(arac['fiyat'])} ₺",
                                         style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -302,8 +313,8 @@ class _KatalogpageState extends State<Katalogpage> {
                               ],
                             ),
                             Positioned(
-                              right: 5,
-                              top: 5,
+                              right: -6,
+                              top: -4,
                               child: IconButton(
                                 icon: Icon(
                                   Icons.star,

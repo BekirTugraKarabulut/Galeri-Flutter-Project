@@ -54,7 +54,7 @@ class _LoginpageState extends State<Loginpage> {
                 child: TextField(
                   controller: usernameController,
                   style: _textStyle,
-                  decoration: _inputDecoration("Kullanıcı Adı", Icons.person,),
+                  decoration: _inputDecoration("Kullanıcı Adı (test@gmail.com)", Icons.person,),
                 ),
               ),
               const SizedBox(height: 12),
@@ -82,8 +82,8 @@ class _LoginpageState extends State<Loginpage> {
 
                       if(usernameController.text.isEmpty || passwordController.text.isEmpty){
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: const Text("Lütfen tüm alanları doldurun !"),
-                          action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                          SnackBar(backgroundColor: Colors.orange,content: const Text("Lütfen tüm alanları doldurun !" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                          action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
                           )
                         );
                         return;
@@ -93,15 +93,15 @@ class _LoginpageState extends State<Loginpage> {
 
                       if(response){
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Giriş Başarılı"),
-                          action: SnackBarAction(label: "Tamam", onPressed: (){}),)
+                          SnackBar(backgroundColor: Colors.orange,content: Text("Giriş Başarılı",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                          action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),)
                         );
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>Anasayfa(username: usernameController.text)));
                       }
                       else{
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Giriş Bilgileri Hatalı !"),
-                          action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                          SnackBar(backgroundColor: Colors.orange,content: Text("Giriş Bilgileri Hatalı !", style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                          action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
                           )
                         );
                         return;

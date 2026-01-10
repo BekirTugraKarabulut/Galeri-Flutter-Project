@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:galeri_app/service/KullaniciFavorilerimService.dart';
 import 'package:galeri_app/service/KullaniciFavoriSilmeService.dart';
+import 'package:intl/intl.dart';
+
 
 class Favorilerimpage extends StatefulWidget {
   String username;
@@ -11,12 +13,15 @@ class Favorilerimpage extends StatefulWidget {
 }
 
 class _FavorilerimpageState extends State<Favorilerimpage> {
-  final KullaniciFavorilerimService _favorilerService =
-  KullaniciFavorilerimService();
-  final KullaniciFavoriSilmeService _silmeService =
-  KullaniciFavoriSilmeService();
-
+  final KullaniciFavorilerimService _favorilerService = KullaniciFavorilerimService();
+  final KullaniciFavoriSilmeService _silmeService = KullaniciFavoriSilmeService();
   Future<List<Map<String, dynamic>>>? _futureFavoriler;
+
+  String formatFiyat(dynamic fiyat) {
+    final formatter = NumberFormat("#,##0", "tr_TR");
+    return formatter.format(int.parse(fiyat.toString()));
+  }
+
 
   @override
   void initState() {
@@ -34,19 +39,20 @@ class _FavorilerimpageState extends State<Favorilerimpage> {
     final bool? onay = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Onay"),
+        backgroundColor: Colors.orange,
+        titlePadding: EdgeInsets.only(top: 20, left: 125, right: 24),
+        title: const Text("Onay" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
         content: const Text(
-            "Favorilerden kaldırmak istediğinize emin misiniz ?"),
+            "Favorilerden kaldırmak istediğinize emin misiniz ?" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Hayır"),
+            child: const Text("Hayır" , style: TextStyle(color:  Colors.black , fontWeight: FontWeight.bold),),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              "Evet",
-              style: TextStyle(color: Colors.red),
+            child: const Text("Evet",
+              style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -62,12 +68,12 @@ class _FavorilerimpageState extends State<Favorilerimpage> {
       if (success) {
         _yenile();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Favoriden kaldırıldı")),
+          const SnackBar(backgroundColor: Colors.orange,content: Text("Favoriden kaldırıldı",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),)),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Silme işlemi sırasında hata oluştu")),
+          const SnackBar(backgroundColor: Colors.orange,
+              content: Text("Silme işlemi sırasında hata oluştu",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),)),
         );
       }
     }
@@ -103,8 +109,8 @@ class _FavorilerimpageState extends State<Favorilerimpage> {
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
               child: Text(
-                "Favori listeniz boş",
-                style: TextStyle(color: Colors.white),
+                "Favori listeniz boş !",
+                style: TextStyle(color: Colors.orange , fontWeight: FontWeight.bold , fontSize: 18),
               ),
             );
           }
@@ -162,8 +168,11 @@ class _FavorilerimpageState extends State<Favorilerimpage> {
                                 style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                  "Araç Fiyatı : ${favori["arac"]["fiyat"]} TL",
-                                style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),
+                                "Fiyatı : ${formatFiyat(favori["arac"]["fiyat"])} TL",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -171,8 +180,8 @@ class _FavorilerimpageState extends State<Favorilerimpage> {
                       ],
                     ),
                     Positioned(
-                      right: 4,
-                      top: 4,
+                      right: -8,
+                      top: -4,
                       child: IconButton(
                         icon: const Icon(Icons.delete,
                             color: Colors.red),

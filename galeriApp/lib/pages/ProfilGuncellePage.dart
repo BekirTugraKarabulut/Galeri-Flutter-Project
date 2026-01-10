@@ -63,13 +63,13 @@ class _ProfilguncellepageState extends State<Profilguncellepage> {
 
     if (sonuc) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Profil başarıyla güncellendi")),
+        const SnackBar(backgroundColor: Colors.orange,content: Text("Profil başarıyla güncellendi",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),)),
       );
 
       Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Profil güncellenemedi")),
+        const SnackBar(backgroundColor: Colors.orange,content: Text("Profil güncellenemedi",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),)),
       );
     }
   }

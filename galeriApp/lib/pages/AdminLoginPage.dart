@@ -92,20 +92,28 @@ class _AdminloginpageState extends State<Adminloginpage> {
 
                     bool response = await _adminLoginService.loginAdmin(galericiId.text, password.text);
 
-                    if(response){
+                    if(galericiId.text.isEmpty || password.text.isEmpty){
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Giriş Başarılı"))
-                      );
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Arabaeklepage(galericiId: galericiId.text)));
-                    }else{
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Giriş Başarısız"),
-                        action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                        SnackBar(backgroundColor: Colors.orange,content: Text("Lütfen Tüm Alanları Doldurun",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                        action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
                         )
                       );
                       return;
                     }
 
+                    if(response){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(backgroundColor: Colors.orange,content: Text("Giriş Başarılı",style: TextStyle(color:  Colors.black , fontWeight: FontWeight.bold),))
+                      );
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Arabaeklepage(galericiId: galericiId.text)));
+                    }else{
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(backgroundColor: Colors.orange,content: Text("Giriş Başarısız",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                        action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
+                        )
+                      );
+                      return;
+                    }
                   },
                   child: const Text("Admin Giriş", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16,
                     ),

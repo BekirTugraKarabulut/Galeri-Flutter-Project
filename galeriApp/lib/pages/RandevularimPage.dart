@@ -13,9 +13,8 @@ class Randevularimpage extends StatefulWidget {
 }
 
 class _RandevularimpageState extends State<Randevularimpage> {
-  final KullaniciRandevularimService kullaniciRandevularimService =
-  KullaniciRandevularimService();
 
+  final KullaniciRandevularimService kullaniciRandevularimService = KullaniciRandevularimService();
   final RandevuSilService randevuSilService = RandevuSilService();
 
   @override
@@ -43,7 +42,7 @@ class _RandevularimpageState extends State<Randevularimpage> {
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(
-                    child: Text("Randevu Bulunamadı.", style: TextStyle(color: Colors.white),
+                    child: Text("Randevu Bulunamadı !", style: TextStyle(color: Colors.orange , fontWeight: FontWeight.bold , fontSize: 18),
                     ),
                   );
                 }
@@ -94,27 +93,33 @@ class _RandevularimpageState extends State<Randevularimpage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Randevu Sil"),
+        backgroundColor: Colors.orange,
+        titlePadding: EdgeInsets.only(top: 20, left: 80, right: 24),
+        title: Text("Randevu Sil" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
         content:
-        Text("Randevuyu silmek istediğinize emin misiniz ?"),
+        Text("Randevuyu silmek istediğinize emin misiniz ?" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
         actions: [
           TextButton(
-            child: Text("Hayır"),
+            child: Text("Hayır" ,style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
             onPressed: () => Navigator.pop(context),
           ),
           TextButton(
-            child: Text("Evet"),
+            child: Text("Evet" , style: TextStyle(color:  Colors.white , fontWeight: FontWeight.bold),),
             onPressed: () async {
               Navigator.pop(context);
               final sonuc = await randevuSilService.randevuSil(randevuId);
               if (sonuc) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Randevu silindi")),
+                  SnackBar(backgroundColor: Colors.orange,content: Text("Randevu silindi",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                  action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
+                  ),
                 );
                 setState(() {});
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Silme işlemi başarısız")),
+                  SnackBar(backgroundColor: Colors.orange,content: Text("Silme işlemi başarısız",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                  action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
+                  ),
                 );
               }
             },

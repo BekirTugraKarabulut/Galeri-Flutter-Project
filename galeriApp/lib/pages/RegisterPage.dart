@@ -21,6 +21,14 @@ class _RegisterpageState extends State<Registerpage> {
   final passwordController = TextEditingController();
   final telefonNoController = TextEditingController();
 
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
+
   InputDecoration _inputDecoration(String hint, IconData icon) {
     return InputDecoration(
       hintText: hint,
@@ -54,7 +62,7 @@ class _RegisterpageState extends State<Registerpage> {
                 child: TextField(
                   controller: usernameController,
                   style: _textStyle,
-                  decoration: _inputDecoration("Kullanıcı Adı", Icons.person),
+                  decoration: _inputDecoration("Kullanıcı Adı (test@gmail.com)", Icons.person),
                 ),
               ),
               const SizedBox(height: 12),
@@ -109,8 +117,27 @@ class _RegisterpageState extends State<Registerpage> {
           
                   if(usernameController.text.isEmpty || isimController.text.isEmpty || soyisimController.text.isEmpty || passwordController.text.isEmpty || telefonNoController.text.isEmpty){
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Lütfen tüm alanları doldurun"),
-                      action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                      SnackBar(backgroundColor: Colors.orange,content: Text("Lütfen tüm alanları doldurun",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                      action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
+                      )
+                    );
+                    return;
+                  }
+
+                  if (!isValidEmail(usernameController.text)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(backgroundColor: Colors.orange,
+                        content: Text("Lütfen geçerli bir e-mail adresi giriniz",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                        action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
+                      ),
+                    );
+                    return;
+                  }
+
+                  if(telefonNoController.text.length != 11){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(backgroundColor: Colors.orange,content: Text("Telefon numarası 11 haneli olmalıdır. Başında 0 ile birlikte giriniz.",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                      action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
                       )
                     );
                     return;
@@ -121,22 +148,22 @@ class _RegisterpageState extends State<Registerpage> {
                         if(value != null){
                           kullanici = value;
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Kayıt Başarılı ! Giriş Sayfasına Yönlendiriliyorsunuz..."),
-                                action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                              SnackBar(backgroundColor: Colors.orange,content: Text("Kayıt Başarılı ! Giriş Sayfasına Yönlendiriliyorsunuz...",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                                action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
                               )
                           );
                           Navigator.pushReplacementNamed(context, "/loginpage");
                         }else{
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Kayıt Başarısız Oldu ! Lütfen Tekrar Deneyin."),
-                                action: SnackBarAction(label: "Tamam", onPressed: (){}),
+                              SnackBar(backgroundColor: Colors.orange,content: Text("Kayıt Başarısız Oldu ! Lütfen Tekrar Deneyin.",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                                action: SnackBarAction(textColor: Colors.black,label: "Tamam", onPressed: (){}),
                               )
                           );
                           return;
                         }
                   });
           
-              }, child: Text("Kayıt Ol",style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold , fontSize: 15),)),
+              }, child: Text("Kayıt Ol",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold , fontSize: 15),)),
               const SizedBox(height: 15,),
               Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [

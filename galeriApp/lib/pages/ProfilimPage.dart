@@ -45,14 +45,50 @@ class _ProfilimpageState extends State<Profilimpage> {
           Padding(
             padding: const EdgeInsets.only(right: 25, top: 25),
             child: IconButton(
+              icon: const Icon(
+                Icons.login_outlined,
+                color: Colors.red,
+                size: 25,
+              ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, "/buttonpage");
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Çıkış Yaptınız."))
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      backgroundColor: Colors.orange,
+                      titlePadding: EdgeInsets.only(top: 20, left: 125, right: 24),
+                      title: const Text("Uyarı" , style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                      content: const Text(
+                        "Uygulamadan çıkış yapmak istiyor musunuz?", style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("Hayır" , style: TextStyle(color: Colors.black)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.pushReplacementNamed(
+                                context, "/buttonpage");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(backgroundColor: Colors.orange,
+                                content: Text("Çıkış yaptınız.",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "Evet",
+                            style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
-              icon: const Icon(Icons.login_outlined,
-                  color: Colors.red, size: 25),
             ),
           )
         ],

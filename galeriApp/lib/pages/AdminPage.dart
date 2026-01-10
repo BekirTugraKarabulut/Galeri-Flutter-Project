@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:galeri_app/pages/AdminArabaEklePage.dart';
 import 'package:galeri_app/pages/AdminAraclarimPage.dart';
+import 'package:galeri_app/pages/AdminKullanicilarPage.dart';
 import 'package:galeri_app/pages/AdminRandevularPage.dart';
 import 'package:galeri_app/pages/ButtonPage.dart';
 
@@ -30,9 +31,11 @@ class _ArabaeklepageState extends State<Arabaeklepage> {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: 50,),
+            SizedBox(height: 10,),
             Text("Admin Paneli" , style: TextStyle(color: Colors.orange , fontSize: 25 , fontWeight:  FontWeight.bold),),
-            SizedBox(height: 200,),
+            SizedBox(height: 50,),
+            Image.asset("images/admin.jpeg" , width: 180, height: 180,),
+            SizedBox(height: 50,),
             Container(
               width: 200,
               height: 50,
@@ -85,6 +88,25 @@ class _ArabaeklepageState extends State<Arabaeklepage> {
                 ),onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context) => Adminrandevularpage(galericiId: widget.galericiId)));
                 }, child: Text("Randevular",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 25),
+              child: Container(
+                width: 200,
+                height: 50,
+                child: ElevatedButton(style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        Colors.orange
+                    ),
+                    shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)
+                        )
+                    )
+                ),onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Adminkullanicilarpage(galericiId: widget.galericiId)));
+                }, child: Text("Kullanıcılar",style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold),)),
               ),
             ),
           ],
